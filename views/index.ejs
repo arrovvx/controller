@@ -1,0 +1,70 @@
+<!DOCTYPE HTML>
+<html>
+
+<head>
+	
+	<!-- Latest compiled and minified CSS -->
+	<link rel="stylesheet" href="stylesheets/bootstrap.min.css">
+
+	<!-- Optional theme -->
+	<link rel="stylesheet" href="stylesheets/bootstrap-theme.min.css">
+
+	<script src="javascripts/jquery.min.js"></script>
+	<script src="javascripts/canvasjs.min.js"></script>
+	
+	<style>
+	/* centered columns styles */
+	.menu-row {
+		text-align:center;
+	}
+	.menu-col {
+		display:inline-block;
+		float:none;
+		/* reset the text-align */
+		text-align:left;
+		/* inline-block space fix */
+		margin-right:-4px;
+		
+		width:320px;
+	}
+	
+	.others-menu{
+		margin-top:50px;
+	}
+	.others-row{
+		margin-top:5px;
+	}
+	</style>
+	
+	<script src="javascripts/index.js"></script>
+</head>
+<body>
+<div id="info"></div>
+	<div class=".text-center" style="text-align:center">
+		<h1>SoundTrap System Controller</h1>
+		<h3>Select Nodes</h3>
+			
+		<div class="signal-menu" id="signal-menu">
+				<div class="row menu-row">
+					<form action='/newGraph' method='post'>
+						<div class="menu-col">
+							<button class="btn btn-primary btn-lg btn-block" type="submit"> + </button>
+						</div>
+					</form>
+				</div>
+		</div>
+		
+		<div class="others-menu" id="others-menu">
+			<div class="others-row">
+				<a href="#" class="btn btn-success btn-lg active" role="button">Demo (TBA)</a>
+			</div>
+			<div class="others-row">
+				<a href="/diagnostic" class="btn btn-danger btn-lg active" role="button">Run Benchmark</a>
+			</div>
+		</div>
+	</div>
+	    
+	<!-- Latest compiled and minified JavaScript -->
+	<script src="javascripts/bootstrap.min.js"></script>
+</body>
+</html>

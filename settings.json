@@ -1,0 +1,29 @@
+{
+	"_comment": "Please edit this accordingly on different systems 192.168.99.101 ",
+	
+	"UIDataTransferPeriod": 2,
+	"maxChannelNumber": 8,
+	"defaultChannelNumber": 4,
+	"realTestChannelNumber": 6,
+	
+	"controllerHTTPPort": 9080,
+	"UIWebsocketPort": 9081,
+	"watchWebsocketPort": 9081,
+	"SamplerWebsocketPort": 8889,
+	
+	"TLCIP": "192.168.1.103",
+	"TLCWebsocketPort": 8890,
+	"TLCStateChangePeriod": 1000,
+	"TLCStateNum": 5,
+	
+	"MDIP": "192.168.1.107",
+	"MDWebsocketPort": 8891,
+	
+	"databaseIP": "192.168.99.100",
+	"databasePort": 27017,
+	"databaseName": "EMG",
+	"mongoRetryPeriod" : 1000,
+	
+	
+	"loggerLevel": "ERROR"
+}

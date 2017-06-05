@@ -1,0 +1,40 @@
+<!DOCTYPE HTML>
+<html>
+
+<head>
+	<!-- Latest compiled and minified CSS -->
+	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css">
+
+	<!-- Optional theme -->
+	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap-theme.min.css">
+
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.2.4/jquery.min.js"></script>
+	<script src="http://canvasjs.com/assets/script/canvasjs.min.js"></script>
+	
+	<script src="javascripts/diagnostic.js"></script>
+	
+</head>
+<body>
+		<input type="hidden" id="WSPort" name="WSPort" value="<%= WSPort %>">
+		<div id="mainTable" class="row" style="margin-left:5px;">
+			<h1>System Diagnostic Page</h1>
+			<hr>
+			<h3>Services Online</h3>
+			<div style="height:100px;">
+				<div id="controllerStatus" style="background-color:red;margin:5px; float:left; height: 80px;line-height: 80px;width:150px;font-size: 25px;text-align:center;border-radius: 25px;border: 2px solid #000000;">Controller</div>
+				<div id="databaseStatus" style="background-color:red;margin:5px; float:left; height: 80px;line-height: 80px;width:150px;font-size: 25px;text-align:center;border-radius: 25px;border: 2px solid #000000;">Database</div>
+				<div id="samplerStatus" style="background-color:red;margin:5px; float:left; height: 80px;line-height: 80px;width:150px;font-size: 25px;text-align:center;border-radius: 25px;border: 2px solid #000000;">Sampler</div>
+				<div id="TLCStatus" style="background-color:red;margin:5px; float:left; height: 80px;line-height: 80px;width:150px;font-size: 25px;text-align:center;border-radius: 25px;border: 2px solid #000000;">TLC</div>
+			</div>
+		
+			<hr>
+			<div id="result"></div>
+			<hr>
+			<button id="performance" type="button" class="btn btn-default btn-lg " style="color: black;">Start Performance Measurements</button>
+				
+		</div>
+	
+	<!-- Latest compiled and minified JavaScript -->
+	<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js"></script>
+</body>
+</html>
