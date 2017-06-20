@@ -1,7 +1,7 @@
 {
 	"_comment": "Please edit this accordingly on different systems June 20,2017",
 	
-	"UIRenderPeriod": 15,
+	"UIRenderPeriod": 100,
 	"UIDataDisplayLength": 4000,
 	
 	"UIDataTransferPeriod": 0.1,
@@ -13,10 +13,10 @@
 	"UIWebsocketPort": 9081,
 	"SamplerWebsocketPort": 8889,
 	
-	"TLCIP": "192.168.1.103",
+	"TLCIP": "dockerhost",
 	"TLCWebsocketPort": 8890,
 	
-	"databaseIP": "dockerhost",
+	"databaseIP": "192.168.99.100",
 	"databasePort": 27017,
 	"databaseName": "audio",
 	"mongoRetryPeriod" : 1000,

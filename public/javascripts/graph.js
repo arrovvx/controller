@@ -7,12 +7,11 @@ $(document).ready(function(){
 	var plotStates = [];
 	var dataDisplayLength = 4000; 		//number of points visible on the charts
 	var channelNum = 0;					//store the number of channels currently in display
-	var renderPeriod = 15;				//the graph will update its display every render second
+	var renderPeriod = 100;				//the graph will update its display every render second
 	
 	var schedulerID = 0;				//used to schedule timing events
 	var actionState = null;
 
-	alert("in here");
 	//initialize the UI variables and interface
 	$.ajax({
 		type: "POST",
