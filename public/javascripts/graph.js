@@ -12,7 +12,7 @@ $(document).ready(function(){
 	var schedulerID = 0;				//used to schedule timing events
 	var actionState = null;
 
-	
+	alert("in here");
 	//initialize the UI variables and interface
 	$.ajax({
 		type: "POST",

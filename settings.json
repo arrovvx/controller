@@ -1,12 +1,12 @@
 {
-	"_comment": "Please edit this accordingly on different systems 192.168.99.101 ",
+	"_comment": "Please edit this accordingly on different systems June 20,2017",
 	
 	"UIRenderPeriod": 15,
 	"UIDataDisplayLength": 4000,
 	
 	"UIDataTransferPeriod": 0.1,
-	"maxChannelNumber": 9,
-	"defaultChannelNumber": 6,
+	"maxChannelNumber": 12,
+	"defaultChannelNumber": 2,
 	"realTestChannelNumber": 6,
 	
 	"controllerHTTPPort": 9080,
@@ -16,7 +16,7 @@
 	"TLCIP": "192.168.1.103",
 	"TLCWebsocketPort": 8890,
 	
-	"databaseIP": "192.168.99.100",
+	"databaseIP": "dockerhost",
 	"databasePort": 27017,
 	"databaseName": "audio",
 	"mongoRetryPeriod" : 1000,

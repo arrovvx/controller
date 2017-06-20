@@ -8,6 +8,8 @@ WORKDIR /src/
 COPY package.json /src/
 RUN npm install
 
+ENV DEBUG=controller*
+
 # Bundle app source
 COPY . /src/
 
