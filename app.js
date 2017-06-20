@@ -31,30 +31,31 @@ app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
 
+//main page
 router.get('/', routes.index);
 router.post('/getSignalGroups', routes.getSignalGroups);
 
+//graphing page
 router.post('/graph', routes.graph);
-router.post('/newGraph', routes.newGraph);
+router.post('/newGraph', routes.graphNew);
 router.post('/getSignalGroupInfo', routes.getSignalGroupInfo);
 
+//graphing utilities
 router.post('/record', routes.record);
-router.post('/test', routes.testTLC);
 router.post('/playback', routes.playback);
+router.post('/test', routes.testTLC);
 router.post('/save', routes.save);
-router.post('/cancel', routes.cancel);
-router.post('/add', routes.add);
+router.post('/clear', routes.clearTmpData);
 router.post('/delete', routes.deleteSignalGroup);
+router.post('/add', routes.addChannel);
+router.post('/subtract', routes.subtractChannel);
 
-router.get('/realTest', routes.realTest);
-router.post('/realTestActivate', routes.realTestActivate);
-
+//performance page
 router.get('/diagnostic', routes.diagnostic);
 router.post('/serviceStatus', routes.serviceStatus);
 router.post('/initPerformanceTest', routes.initPerformanceTest);
 router.post('/performanceTest', routes.performanceTest);
 
-router.get('/getText', routes.getText);
 
 app.use('/', router);
 

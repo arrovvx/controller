@@ -2,14 +2,14 @@ $(document).ready(function(){
 
 	var ws = null;
 	var wsID = null;
-	var defaultValue = 0;		//default initial value for the plots, delete this if its not necessary
-	var debugLog = false;
+	var defaultValue = 0;				//default initial value for the plots, delete this if its not necessary
 
 	var plotStates = [];
-	var dataLength = 5000; 		//number of points visible on the charts
-	var channelNum = 0;			//store the number of channels currently in display
-	var renderPeriod = 15;		//the graph will update its display every render second
-	var schedulerID = 0;		//used to schedule timing events
+	var dataDisplayLength = 4000; 		//number of points visible on the charts
+	var channelNum = 0;					//store the number of channels currently in display
+	var renderPeriod = 15;				//the graph will update its display every render second
+	
+	var schedulerID = 0;				//used to schedule timing events
 	var actionState = null;
 
 	
@@ -19,16 +19,19 @@ $(document).ready(function(){
 		url: "/getSignalGroupInfo",
 		contentType: 'application/json',
 	   //data: {format: 'json'},
-		success: function(data, status, xhr) {
-			var signalGroupName = JSON.parse(data).signalGroupName;
-			var channels = JSON.parse(data).channels;
+		success: function(message, status, xhr) {
+			var data = JSON.parse(message);
+			var signalGroupName = data.signalGroupName;
+			var channels = data.channels;
+			renderPeriod = data.renderPeriod;
+			dataDisplayLength = data.dataDisplayLength;
 			
 			$("#signalGroupName").val(signalGroupName);
 			
 			channels.forEach( function(channel, index){
 				//alert(JSON.stringify(createPlotState("EMG" + channel)));
 				channelNum++;
-			
+				
 				$("#graphTable").append('<div class="col-md-6"><div id="' + "CH-" + channelNum + '" style="height: 250px;"></div></div>');	
 				
 				var state = createPlotState("CH-" + channelNum);
@@ -59,18 +62,13 @@ $(document).ready(function(){
 		} else {
 			var values = data.input;
 			
-			plotStates.forEach(function each(state, index){
-				var input = parseFloat(values[index]); 	//probably don't need this
-				updatePlot(state, input);
-			});
+			for (var i = 0, len = plotStates.length; i < len; i++) {
+				updatePlot(plotStates[i], values[i]);
+			}
 
 			//debugging purposes
-			if (debugLog){
-				var messageBox = document.getElementById("messageBox");
-				messageBox.innerHTML += "<div>Channel Values: "+values.toString()+"\n"+"</div>";
-			}
-			
-			var output = data.output;
+			//var messageBox = document.getElementById("messageBox");
+			//messageBox.innerHTML += "<div>Channel Values: "+values.toString()+"\n"+"</div>";
 		}
 	};
 
@@ -86,7 +84,7 @@ $(document).ready(function(){
 	function initializePlot(){
 
 		plotStates.forEach(function each(state, index){
-			for(i = 0; i < dataLength / 2;i++)
+			for(i = 0; i < dataDisplayLength / 2;i++)
 				updatePlot(state, defaultValue);
 			state.chart.render();
 		});
@@ -125,14 +123,13 @@ $(document).ready(function(){
 		});
 		plotState.xVal++;
 		
-		if (plotState.dps.length > dataLength)
+		if (plotState.dps.length > dataDisplayLength)
 			plotState.dps.shift();
 		
 	};
 	
 	function isOtherActionActive(newActionName){
 		if(actionState){
-			
 			if(actionState == newActionName){
 				actionState = null;
 				return false;
@@ -150,7 +147,8 @@ $(document).ready(function(){
 	function clearActions(){
 		//make sure button is pressed up
 		if(actionState){
-			$("#" + actionState).toggleClass('btn-default');
+			if (!$("#" + actionState).hasClass('btn-default'))
+				$("#" + actionState).toggleClass('btn-default');
 			actionState = null;
 		}
 		
@@ -159,6 +157,7 @@ $(document).ready(function(){
 		ws.onmessage = null;	
 	}
 
+	//optimize this
 	//function called to connect to the websocket on the server end
 	function WSConnect(){
 		var serverURL = window.location.hostname;
@@ -167,7 +166,6 @@ $(document).ready(function(){
 
 		//check if websocket is supported
 		if ("WebSocket" in window) {
-			
 			//create connection
 			ws = new WebSocket("ws://" + serverURL + ":" + wsPort + "/");
 
@@ -180,13 +178,14 @@ $(document).ready(function(){
 				var data = JSON.parse(serverRes.data);
 				if (wsID == null) wsID = data.ID;
 				ws.onmessage = null;
+				
 			};			
 
 			ws.onclose = function() { 
-			
 				clearActions();
 				ws = null;					
 				console.log("Connection is closed...");	
+				
 			};
 		} else {
 			alert("WebSocket NOT supported");
@@ -216,14 +215,7 @@ $(document).ready(function(){
 						ws.onmessage = null;
 						clearInterval(schedulerID);
 					} else {
-						ws.onmessage = function(WSRes){
-							var data = JSON.parse(WSRes.data);
-							
-							$("#output").html(convertTLCRes(data.output));
-							plotWSRes(WSRes);
-							
-						}
-						plotWSRes;
+						ws.onmessage = plotWSRes;
 						schedulerID = setInterval( renderPlots, renderPeriod);
 					}
 				},
@@ -234,22 +226,6 @@ $(document).ready(function(){
 				}
 			});
 		});
-		
-		function convertTLCRes(data){
-			if(data == 0){
-				return "Rest";
-			} else if(data == 1){
-				return "Index";
-			} else if(data == 2){
-				return "Middle";
-			} else if(data == 3){
-				return "Ring";
-			} else if(data == 4){
-				return "Pinky";
-			} else if(data == 5){
-				return "Fist";
-			}
-		}
 		
 		//result button handler, tell the server to load samples to test the AI result
 		$( "#test" ).click(function() {
@@ -271,21 +247,7 @@ $(document).ready(function(){
 						ws.onmessage = null;
 						clearInterval(schedulerID);
 					} else {
-						ws.onmessage = function(WSRes){
-							var data = JSON.parse(WSRes.data);
-							
-							if(data.name == "TLCOutput"){
-								if($("#output").html() == convertTLCRes(data.output))
-									$("#predict").css('color', 'green');
-								else
-									$("#predict").css('color', 'red');
-								$("#predict").html(convertTLCRes(data.output));
-							} else {
-								$("#output").html(convertTLCRes(data.output));
-								plotWSRes(WSRes);
-							}
-							
-						}
+						ws.onmessage = plotWSRes;
 						schedulerID = setInterval( renderPlots, renderPeriod); 
 					}
 				},
@@ -370,7 +332,7 @@ $(document).ready(function(){
 			
 			$.ajax({
 				type: "POST",
-				url: "/cancel",
+				url: "/clear",
 				contentType: 'application/json',
 				data: JSON.stringify({"ID": wsID}),
 				success: function(data, status, xhr) {
@@ -427,8 +389,10 @@ $(document).ready(function(){
 				contentType: 'application/json',
 				data: JSON.stringify({"ID": wsID}),
 				success: function(data, status, xhr) {
+					console.log("add: ", channelNum);
 					channelNum++;
-					$("#graphTable").append('<div class="col-md-6"><div id="' + "CH-" + channelNum + '" style="height: 300px;"></div></div>');
+					console.log("add: ", channelNum);
+					$("#graphTable").append('<div class="col-md-6"><div id="' + "CH-" + channelNum + '" style="height: 250px;"></div></div>');
 					
 					var newState = createPlotState("CH-" + channelNum);
 							
@@ -439,6 +403,38 @@ $(document).ready(function(){
 					isOtherActionActive("add");
 					//alert("qwe333" + plotStates.toString());
 					//$("#add").toggleClass('btn-default');
+				},
+				
+				error: function(xhr, status, error) {
+					clearActions();
+					alert("Error in add! Server response: " + xhr.responseText);
+				}
+			});
+		});
+		
+		//subtract button handler, tell the server to subtract a new channel to this signal group
+		$( "#subtract" ).click(function() {
+			//check if the an action is already activated
+			if(isOtherActionActive("subtract")){
+				alert("Error! Please stop the other actions before performing this one");
+				return null;
+			}
+		
+			//$("#add").toggleClass('btn-default');
+
+			
+			$.ajax({
+				type: "POST",
+				url: "/subtract",
+				contentType: 'application/json',
+				data: JSON.stringify({"ID": wsID}),
+				success: function(data, status, xhr) {
+					var lastChannel = document.getElementById("CH-" + channelNum).parentNode;
+					lastChannel.remove();
+					
+					channelNum--;
+					plotStates.pop();
+					isOtherActionActive("subtract");
 				},
 				
 				error: function(xhr, status, error) {
