@@ -29,6 +29,7 @@ module.exports = function (settings, dataaccess){
 		signalGroupName: "",
 		actionState: ACTION_NONE,
 		performanceState:PERFORMANCE_NONE,
+		schedulerID: null,
 		channelVal: [],
 		UIClients: {},
 		sysClientID: 1,
@@ -201,10 +202,9 @@ module.exports = function (settings, dataaccess){
 			if (sas.actionState == ACTION_NONE){
 				sas.samplerActionFunction = function (message){
 					var data = JSON.parse(message);
-					
-					if(data.name == "audio" && data.input && data.input.length == sas.channelVal.length){
+					if(data.name == "audio" && data.input && data.input[0].length == sas.channelVal.length){
 						uploadDataToDB(data);
-						sendChannelValuesToUI(data);
+						uploadMessageToUI(message);
 					} else {
 						debug("Error, data fields not properly defined");
 					}
@@ -288,9 +288,9 @@ module.exports = function (settings, dataaccess){
 						//setup sampler action
 						sas.samplerActionFunction = function (message){
 								var data = JSON.parse(message);
-								if(data.name == "audio" && data.input && data.input.length == sas.channelVal.length){
-									uploadDataToTLC(data);
-									sendChannelValuesToUI(data);
+								if(data.name == "audio" && data.input && data.input[0].length == sas.channelVal.length){
+									uploadMessageToTLC(message);
+									uploadMessageToUI(message);
 								} else {
 									debug("Error, data fields not properly defined");
 								}
@@ -611,7 +611,7 @@ module.exports = function (settings, dataaccess){
 			} else {
 				sas.tmpTimestamp = newTimestamp;
 				if(signal){
-					sendChannelValuesToUI(signal);
+					uploadMessageToUI(signal);
 					
 				} else {
 					debug("No signal found for playback, replay signals");
@@ -626,26 +626,6 @@ module.exports = function (settings, dataaccess){
 			//WSConn.sampler.clients.forEach(function each(client) {
 			//	client.removeListener('message', samplerDefaultHandler);
 		}
-	};
-	
-	function sendChannelValuesToUI(data){
-		sas.UIClients[sas.sysClientID].send(JSON.stringify({"name" : data.name, "input": data.input, "output":data.output}), function(err){ //
-			//error sending websocket client  info
-			if (err){
-				debug("Fail to send client channel data. Error: " + err);
-				
-			}
-		});
-		/*
-		WSConn.UI.clients.forEach(function each(client) {
-			client.send(JSON.stringify({"name" : settings.databaseName, "input": data.input}), function(err){ //"output":data.output
-				//error sending websocket client  info
-				if (err){
-					console.log("Fail to send client channel data. Error: " + err);
-					
-				}
-			});
-		});*/
 	};
 	
 	function setSamplerHandler(handler){
@@ -699,9 +679,19 @@ module.exports = function (settings, dataaccess){
 		
 	};
 	
-	function uploadDataToTLC(data){
+	function uploadMessageToTLC(message){
 		
-		WSConn.TLC.send(JSON.stringify({"name" : settings.databaseName, "input": data.input, "output":data.output, "timestamp": data.timestamp}));
+		WSConn.TLC.send(message);
+	};
+	
+	function uploadMessageToUI(message){
+		sas.UIClients[sas.sysClientID].send(message, function(err){ //
+			//error sending websocket client  info
+			if (err){
+				debug("Fail to send client channel data. Error: " + err);
+				
+			}
+		});
 	};
 	
 	//wrapper to establish connection to the TLC websocket server and send request

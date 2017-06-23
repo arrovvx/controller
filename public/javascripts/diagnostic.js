@@ -60,6 +60,8 @@ $(document).ready(function(){
 					$("#performance").removeAttr('disabled');
 					$("#result").html( "Latency: " + sum / counter+ " ms");
 					$("#result").append("<br>Throughput: " + (counter* 1000) / (Math.abs(Date.now() - startTime)) + " req/s");
+					$("#result").append("<br>PayloadSize: " + payloadSize);
+					$("#result").append("<br>Channel Number: " + channelNum);
 				}
 				startTime = 0
 				counter = -2;
@@ -71,6 +73,9 @@ $(document).ready(function(){
 			alert("WebSocket NOT supported");
 		}
 	};	
+	
+	var payloadSize = 0;
+	var channelNum = 0;
 	var time = Date.now();
 	var time2 = window.performance.now();
 	var counter = -2;
@@ -84,7 +89,7 @@ $(document).ready(function(){
 			$("#performance").toggleClass('btn-default'); //make button disappear and have some animation saying initializing
 			$("#performance").attr('disabled','disabled');
 			
-			startTime = Date.now();
+			
 			refreshStatus(function(){
 				$.ajax({
 					type: "POST",
@@ -102,8 +107,16 @@ $(document).ready(function(){
 								var time2 = window.performance.now();
 								var lag = Math.abs(time2 + time - jQuery.parseJSON(data.data).timestamp) % 10;
 								$("#result").html( "<div>Trip " + counter + ": " + lag + "ms</div>");
-								if (counter >= 0)
+								if (counter > 0){
 									sum = sum + lag;
+								} else if (counter == 0){
+									sum = sum + lag;
+									Pdata = jQuery.parseJSON(data.data);
+									payloadSize = Pdata.input.length; 
+									channelNum = Pdata.input[0].length;
+									startTime = Date.now();
+								}
+								
 								counter = counter + 1;
 								
 							};

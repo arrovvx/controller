@@ -22,8 +22,8 @@ $(document).ready(function(){
 			var data = JSON.parse(message);
 			var signalGroupName = data.signalGroupName;
 			var channels = data.channels;
-			renderPeriod = data.renderPeriod;
-			dataDisplayLength = data.dataDisplayLength;
+			renderPeriod = 50;/////////////data.renderPeriod;
+			dataDisplayLength = 500;//data.dataDisplayLength;
 			
 			$("#signalGroupName").val(signalGroupName);
 			
@@ -60,11 +60,9 @@ $(document).ready(function(){
 			
 		} else {
 			var values = data.input;
-			
-			for (var i = 0, len = plotStates.length; i < len; i++) {
-				updatePlot(plotStates[i], values[i]);
-			}
-
+				for (var i2 = 0, len2 = plotStates.length; i2 < len2; i2++) {
+					updatePlot(plotStates[i2], values[0][i2]);
+				}
 			//debugging purposes
 			//var messageBox = document.getElementById("messageBox");
 			//messageBox.innerHTML += "<div>Channel Values: "+values.toString()+"\n"+"</div>";
@@ -74,9 +72,9 @@ $(document).ready(function(){
 	//this function updates the plot display
 	var renderPlots = function(){
 
-		plotStates.forEach(function each(state, index){
-			state.chart.render();
-		});
+		for(var i=0,len=plotStates.length; i < len; i++){
+			plotStates[i].chart.render();
+		}
 	};
 
 	//this function initialize the plot to a default value for viewing between different actions
